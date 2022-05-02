@@ -10,7 +10,7 @@ const Index: FunctionComponent = () => {
     <KibanaLayout
   
       pageHeader={{
-        pageTitle: 'Gavin',
+        pageTitle: 'Threat Intelligence',
       }}>
       <EuiFlexGroup gutterSize="l">
         <EuiFlexItem>

@@ -5,6 +5,7 @@ export const wrapperStyles = euiTheme => ({
     display: flex;
     flex-direction: column;
     max-width: 1120px;
+    height: 100%;
     margin: 0 auto;
     padding-right: ${euiTheme.size.base};
     padding-bottom: ${euiTheme.size.xxl};

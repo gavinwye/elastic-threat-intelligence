@@ -25,7 +25,7 @@ const Header = () => {
       sections={[
         {
           items: [
-            <Link key="logo-eui" href="/" passHref>
+            <Link key="logo-elastic" href="/" passHref>
               <a css={styles.logo}>
                 <Image
                   width={24}

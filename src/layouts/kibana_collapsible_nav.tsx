@@ -42,7 +42,7 @@ const CollapsibleNav = () => {
 
   const breadcrumbs = [
     {
-      text: 'Home',
+      text: 'Security',
     },
   ];
 

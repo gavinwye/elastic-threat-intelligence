@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiCard, EuiIcon } from '@elastic/eui';
-import KibanaLayout from '../../layouts/kibana';
+import KibanaLayout from '../../layouts/kibana_clean';
 import { EuiSideNav, htmlIdGenerator } from '@elastic/eui';
 
 const pathPrefix = process.env.PATH_PREFIX;
