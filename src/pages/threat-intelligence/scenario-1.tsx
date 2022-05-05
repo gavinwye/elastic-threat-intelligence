@@ -22,7 +22,7 @@ const Index: FunctionComponent = () => {
       <p className=''>
         To see Threat Intelligence indicators here, you need to add some feeds.
       </p>
-        <EuiButton href='/threat-intelligence/indicators' fill>Add Feeds</EuiButton>
+        <EuiButton href='/threat-intelligence/add-feeds' fill>Add Feeds</EuiButton>
     </EuiCallOut>
     </KibanaLayout>
     

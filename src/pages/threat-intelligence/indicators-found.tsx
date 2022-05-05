@@ -10,6 +10,10 @@ import {
   EuiBasicTable,
   EuiTablePagination,
   EuiText,
+  EuiCallOut,
+  EuiAccordion,
+  EuiPanel,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
 import KibanaLayout from "../../layouts/kibana";
 import { formatDate } from "@elastic/eui/es/services/format";
@@ -105,7 +109,7 @@ export const Index = () => {
       render: (name, item) => (
         <EuiFlexGroup responsive={false} alignItems="center">
           <EuiFlexItem>
-            {item.firstName} {item.lastName}
+            {item.firstName}
           </EuiFlexItem>
           <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
         </EuiFlexGroup>
@@ -119,45 +123,37 @@ export const Index = () => {
       render: (name, item) => (
         <EuiFlexGroup responsive={false} alignItems="center">
           <EuiFlexItem>
-            {item.firstName} {item.lastName}
+            {item.lastName}
           </EuiFlexItem>
           <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
         </EuiFlexGroup>
       ),
     },
     {
-      field: "github",
-      name: "Github",
-      render: (username) => (
-        <EuiLink href={`https://github.com/${username}`} target="_blank">
-          {username}
-        </EuiLink>
-      ),
-    },
-    {
-      field: "dateOfBirth",
-      name: "Date of Birth",
+      field: "lastSeen",
+      name: "Last seen",
       dataType: "date",
       render: (date) => formatDate(date, "dobLong"),
       sortable: true,
     },
     {
-      field: "nationality",
-      name: "Nationality",
-      render: (countryCode) => {
-        const country = store.getCountry(countryCode);
-        return `${country.flag} ${country.name}`;
-      },
+      field: "fisrtSeen",
+      name: "FirstSeen",
+      dataType: "date",
+      render: (date) => formatDate(date, "dobLong"),
+      sortable: true,
     },
     {
-      field: "online",
-      name: "Online",
-      dataType: "boolean",
-      render: (online) => renderStatus(online),
-      sortable: true,
-      mobileOptions: {
-        show: false,
-      },
+      field: "providerOverlap",
+      name: "Provider Overlap",
+      render: (name, item) => (
+        <EuiFlexGroup responsive={false} alignItems="center">
+          <EuiFlexItem>
+            {item.lastName}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
+        </EuiFlexGroup>
+      ),
     },
   ];
 
@@ -190,7 +186,10 @@ export const Index = () => {
     tableRef.current.setSelection(onlineUsers);
   };
 
+  const simpleAccordionId = useGeneratedHtmlId({ prefix: 'simpleAccordion' });
+
   return (
+    
     <KibanaLayout
       pageHeader={{
         pageTitle: "Threat Intelligence",
@@ -198,45 +197,67 @@ export const Index = () => {
           {
             label: "Indicators",
             href: `${pathPrefix}/threat-intelligence/indicators`,
+            isSelected: true,
           },
           {
             label: "Feeds",
             href: `${pathPrefix}/threat-intelligence/feeds`,
-            isSelected: true,
           },
         ],
         rightSideItems: [<EuiButton fill>Add feeds</EuiButton>],
       }}
     >
+      
+
+      <EuiCallOut color="danger">
+        <EuiText color="danger"><h2 color="danger">Indicators found</h2></EuiText>
+        <EuiText><p>The indicator match rule found 765 indicators. Alerts have been created for these indicators.</p></EuiText>
+        <EuiSpacer size="m" />
+        <EuiButton size="s" color="danger" href='/alerts/' fill>View the Alerts</EuiButton>
+        <EuiButton size="s" color="danger" href='/alerts/' >Dismiss</EuiButton>
+        {/* @to-do: These two buttons should have some space between them */}
+      </EuiCallOut>
+
+      <EuiSpacer size="l" />
+
       <EuiFieldSearch
         fullWidth
-        placeholder="Search feeds"
+        placeholder="Search indicators"
         append={<EuiButton fill>Search</EuiButton>}
       ></EuiFieldSearch>
 
       <EuiSpacer size="l" />
 
-      <EuiBasicTable
-        tableCaption="Demo for EuiBasicTable with selection"
-        ref={tableRef}
-        items={pageOfItems}
-        itemId="id"
-        columns={columns}
-        sorting={sorting}
-        isSelectable={true}
-        selection={selection}
-        onChange={onTableChange}
-        rowHeader="firstName"
-        loading={isLoading}
-      />
+      <EuiText >
+        <h3>Table goes here</h3>
+      </EuiText>
 
-      <EuiTablePagination
-        aria-label="Custom EuiTable demo"
-        pageCount={0}
-        activePage={pageIndex}
-        hidePerPageOptions
-        compressed
-      />
+
+      <EuiSpacer size="l" />
+
+      <EuiAccordion id={simpleAccordionId} buttonContent="Show page notes">
+        <EuiPanel color="subdued">
+          <EuiText size="s">
+            <h4>Content that needs to go on this page</h4>
+            <ul>
+              <li>Table contaning indicators</li>
+              <ul>
+                <li><strong>Fields</strong></li>
+                <li>Indicator</li>
+                <li>Indicator type</li>
+                <li>Threat action</li>
+                <li>Last seen</li>
+                <li>First seen</li>
+                <li>Provider overlap</li>
+              </ul>
+              <li>Data for that table</li>
+              <li>Add fields button</li>
+            </ul>
+            <p>There are too many buttons on this page ATM. Need to figure out what the primary task is at this stage in the journey.</p>
+          </EuiText>
+        </EuiPanel>
+      </EuiAccordion>
+
     </KibanaLayout>
   );
 };
