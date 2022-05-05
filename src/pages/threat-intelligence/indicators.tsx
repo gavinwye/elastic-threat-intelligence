@@ -1,68 +1,29 @@
-import { FunctionComponent,  } from 'react';
+import React, { useState, useRef } from "react";
 import {
   EuiFlexGroup,
   EuiFlexItem,
-  EuiCard,
-  EuiIcon,
-  EuiPageHeader,
   EuiButton,
-  EuiCallOut,
   EuiLink,
-  EuiTitle,
-  EuiDataGrid,
-  EuiText,
   EuiFieldSearch,
-} from '@elastic/eui';
-import KibanaLayout from '../../layouts/kibana';
-import { EuiSideNav, htmlIdGenerator } from '@elastic/eui';
-
-const pathPrefix = process.env.PATH_PREFIX;
-
-const Index: FunctionComponent = () => {
-  return (
-    <KibanaLayout
-      pageHeader={
-        {
-        pageTitle: 'Threat Intelligence',
-          tabs: 
-            [
-            {
-              label: 'Indicators',
-              isSelected: true,
-            },
-            {
-              label: 'Feeds',
-              href: '/threat-intelligence/feeds',
-            },
-          ],
-          rightSideItems: 
-            [
-            <EuiButton fill>Add feeds</EuiButton>,
-           ]
-      }
-      }>
-      <EuiFieldSearch fullWidth placeholder="Search indicators" append={<EuiButton fill>Search</EuiButton>} ></EuiFieldSearch>
-    </KibanaLayout>
-  );
-};
-
-import ReactDOM from "react-dom";
-//import "@elastic/eui/dist/eui_theme_dark.css";
-import "@elastic/eui/dist/eui_theme_light.css";
-import React, { useState, Fragment, useRef } from "react";
-import { formatDate } from "@elastic/eui/es/services/format";
-import { createDataStore } from "./data_store";
-
-import {
   EuiHealth,
   EuiSpacer,
   EuiBasicTable,
-  EuiTablePagination
+  EuiTablePagination,
+  EuiText,
+  EuiCallOut,
+  EuiAccordion,
+  EuiPanel,
+  useGeneratedHtmlId,
 } from "@elastic/eui";
+import KibanaLayout from "../../layouts/kibana";
+import { formatDate } from "@elastic/eui/es/services/format";
+import { createDataStore } from "./data_store";
+
+const pathPrefix = process.env.PATH_PREFIX;
 
 const store = createDataStore();
 
-export const Table = () => {
+export const Index = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
@@ -129,74 +90,71 @@ export const Table = () => {
 
   const columns = [
     {
-      field: "firstName",
-      name: "First Name",
+      field: "Indicator",
+      name: "Indicator",
       sortable: true,
       truncateText: true,
       mobileOptions: {
-        show: false
-      }
+        show: true,
+      },
     },
     {
-      field: "lastName",
-      name: "Last Name",
+      field: "indicatorType",
+      name: "Indicator Type",
+      sortable: true,
       truncateText: true,
       mobileOptions: {
-        show: false
-      }
-    },
-    {
-      field: "firstName",
-      name: "Full Name",
-      mobileOptions: {
-        only: true,
-        header: false,
-        enlarge: true,
-        width: "100%"
+        show: true,
       },
       render: (name, item) => (
         <EuiFlexGroup responsive={false} alignItems="center">
           <EuiFlexItem>
-            {item.firstName} {item.lastName}
+            {item.firstName}
           </EuiFlexItem>
           <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
         </EuiFlexGroup>
-      )
+      ),
     },
     {
-      field: "github",
-      name: "Github",
-      render: (username) => (
-        <EuiLink href={`https://github.com/${username}`} target="_blank">
-          {username}
-        </EuiLink>
-      )
+      field: "threatAction",
+      name: "Threat Action",
+      sortable: true,
+      truncateText: true,
+      render: (name, item) => (
+        <EuiFlexGroup responsive={false} alignItems="center">
+          <EuiFlexItem>
+            {item.lastName}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
+        </EuiFlexGroup>
+      ),
     },
     {
-      field: "dateOfBirth",
-      name: "Date of Birth",
+      field: "lastSeen",
+      name: "Last seen",
       dataType: "date",
       render: (date) => formatDate(date, "dobLong"),
-      sortable: true
-    },
-    {
-      field: "nationality",
-      name: "Nationality",
-      render: (countryCode) => {
-        const country = store.getCountry(countryCode);
-        return `${country.flag} ${country.name}`;
-      }
-    },
-    {
-      field: "online",
-      name: "Online",
-      dataType: "boolean",
-      render: (online) => renderStatus(online),
       sortable: true,
-      mobileOptions: {
-        show: false
-      }
-    }
+    },
+    {
+      field: "fisrtSeen",
+      name: "FirstSeen",
+      dataType: "date",
+      render: (date) => formatDate(date, "dobLong"),
+      sortable: true,
+    },
+    {
+      field: "providerOverlap",
+      name: "Provider Overlap",
+      render: (name, item) => (
+        <EuiFlexGroup responsive={false} alignItems="center">
+          <EuiFlexItem>
+            {item.lastName}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>{renderStatus(item.online)}</EuiFlexItem>
+        </EuiFlexGroup>
+      ),
+    },
   ];
 
   const pagination = {
@@ -204,14 +162,14 @@ export const Table = () => {
     pageSize: pageSize,
     totalItemCount: totalItemCount,
     pageSizeOptions: [3, 5, 8],
-    pageCount: 0
+    pageCount: 0,
   };
 
   const sorting = {
     sort: {
       field: sortField,
-      direction: sortDirection
-    }
+      direction: sortDirection,
+    },
   };
 
   const onlineUsers = store.users.filter((user) => user.online);
@@ -221,49 +179,100 @@ export const Table = () => {
     selectableMessage: (selectable) =>
       !selectable ? "User is currently offline" : undefined,
     onSelectionChange: onSelectionChange,
-    initialSelected: onlineUsers
+    initialSelected: onlineUsers,
   };
 
   const onSelection = () => {
     tableRef.current.setSelection(onlineUsers);
   };
 
+  const simpleAccordionId = useGeneratedHtmlId({ prefix: 'simpleAccordion' });
+
   return (
-    <Fragment>
-      <EuiFlexGroup alignItems="center">
-        <EuiFlexItem grow={false}>
-          <EuiButton onClick={onSelection}>Select online users</EuiButton>
-        </EuiFlexItem>
-        <EuiFlexItem />
-        {deleteButton}
-      </EuiFlexGroup>
+    <KibanaLayout
+      pageHeader={{
+        pageTitle: "Threat Intelligence",
+        tabs: [
+          {
+            label: "Indicators",
+            href: `${pathPrefix}/threat-intelligence/indicators`,
+            isSelected: true,
+          },
+          {
+            label: "Feeds",
+            href: `${pathPrefix}/threat-intelligence/feeds`,
+          },
+        ],
+        rightSideItems: [<EuiButton fill>Add feeds</EuiButton>],
+      }}
+    >
+
+      <EuiCallOut>
+        <h2 color='#07c'>Enable the indicator match rule</h2>
+        <p className=''>
+          To see Threat Intelligence indicators here, you need to add some feeds.
+        </p>
+        <EuiButton href='/indicator-match/rule' fill>Enable</EuiButton>
+      </EuiCallOut>
 
       <EuiSpacer size="l" />
 
-      <EuiBasicTable
-        tableCaption="Demo for EuiBasicTable with selection"
-        ref={tableRef}
-        items={pageOfItems}
-        itemId="id"
-        columns={columns}
-        sorting={sorting}
-        isSelectable={true}
-        selection={selection}
-        onChange={onTableChange}
-        rowHeader="firstName"
-        loading={isLoading}
-      />
+      <EuiFieldSearch
+        fullWidth
+        placeholder="Search indicators"
+        append={<EuiButton fill>Search</EuiButton>}
+      ></EuiFieldSearch>
 
-      <EuiTablePagination
-        aria-label="Custom EuiTable demo"
-        pageCount={0}
-        activePage={pageIndex}
-        hidePerPageOptions
-        compressed
-      />
-    </Fragment>
+      <EuiSpacer size="l" />
+
+      <EuiText>
+        <h3>Table goes here with data</h3>
+        <ul>
+          <li>Indicator</li>
+          <li>Indicator type</li>
+          <li>Threat action</li>
+          <li>First seen</li>
+          <li>Provider overlap</li>
+        </ul>
+        <p>Data should come from JSON file `data.tsx` this isn't in the ECS format so need to do something with this. @max maybe this is something will need to sort out.</p>
+        <h3>Page states</h3>
+        <ul>
+          <li>Enable indicator match rule. Action: turn on rule</li>
+          <li>Indicators found. Actions: 1) LInk to alerts 2) dismiss</li>
+          <li>No indicators found. Action: Dismiss</li>
+        </ul>
+        <p>Need to finds a way to store these page states in the session and show them at the right time in the journey.</p>
+        <h3>Other page elements </h3>
+        <ul>
+          <li>Data for that table</li>
+          <li>Add fields button</li>
+          <li>KQL search bar, need to add that to the top of each page</li>
+        </ul>
+        <h3>Navigation</h3>
+        <ul>
+          <li>Navigate to indicator page from indicator in the table</li>
+        </ul>
+        <h3>Questions</h3>
+        <ul>
+          <li>Should we have a flyout on this page?</li>
+          <li>Three buttons on this page with different actions what should we do about that?</li>
+        </ul>
+      </EuiText>
+
+      <EuiSpacer size="l" />
+
+      <EuiAccordion id={simpleAccordionId} buttonContent="Show page notes">
+        <EuiPanel color="subdued">
+          <EuiText size="s">
+            <h4>Content that needs to go on this page</h4>
+
+            <p>There are too many buttons on this page ATM. Need to figure out what the primary task is at this stage in the journey.</p>
+          </EuiText>
+        </EuiPanel>
+      </EuiAccordion>
+
+    </KibanaLayout>
   );
 };
-
 
 export default Index;
